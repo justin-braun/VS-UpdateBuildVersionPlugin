@@ -11,6 +11,10 @@ namespace UpdateBuildVersion
             //var sols = await VS.Solutions.GetAllProjectsAsync();
             var proj = await VS.Solutions.GetActiveProjectAsync();
 
+            // Determine if this plugin has written the build number before
+            string versionInitialized = await proj.GetAttributeAsync("versionInitialized");
+            if (string.IsNullOrEmpty(versionInitialized)) versionInitialized = "false";
+
             // Get Last Build Date 
             string lastBuildDate = await proj.GetAttributeAsync("LastBuildDate");
             if (string.IsNullOrEmpty(lastBuildDate)) lastBuildDate = DateTime.Now.ToString();
@@ -33,15 +37,26 @@ namespace UpdateBuildVersion
                 }
                 else
                 {
-                    int diff = (DateTime.Now - DateTime.Parse(lastBuildDate)).Days;
-
-                    if(diff > 0)
+                    if(versionInitialized == "true")
                     {
-                        currentBuildNum = 0;
+                        int diff = (DateTime.Now - DateTime.Parse(lastBuildDate)).Days;
+
+                        if (diff > 0)
+                        {
+                            currentBuildNum = 0;
+                        }
+                        else
+                        {
+                            currentBuildNum = int.Parse(versionSplit[3]);
+                        }
                     }
                     else
                     {
-                        currentBuildNum = int.Parse(versionSplit[3]);
+                        // Set to 0
+                        currentBuildNum = 0;
+
+                        // Update attribute
+                        await proj.TrySetAttributeAsync("versionInitialized", "true");
                     }
                 }
             }
