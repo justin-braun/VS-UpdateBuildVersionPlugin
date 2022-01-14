@@ -11,7 +11,7 @@ namespace UpdateBuildVersion
         public const string Name = "Update Build Version Extensions";
         public const string Description = @"Update version numbers for the build.";
         public const string Language = "en-US";
-        public const string Version = "1.3.1";
+        public const string Version = "1.3.2";
         public const string Author = "Justin Braun";
         public const string Tags = "";
     }
